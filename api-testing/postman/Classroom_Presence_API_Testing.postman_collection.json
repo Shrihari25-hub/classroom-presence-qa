@@ -1,0 +1,938 @@
+{
+	"info": {
+		"_postman_id": "f671a121-b389-443e-86b8-29271b2e6a17",
+		"name": "Classroom Presence Platform - API Testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34664092"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "AUTH_TC_001 - Register Teacher",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH_TC_002 - Duplicate Email Registration",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH_TC_003 - Missing Required Field",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH_TC_004 - Invalid Role",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH_TC_005 - Short Password",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH_TC_006 - Login with Valid Credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verify successful login\r",
+									"pm.test(\"Login status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test 2: Verify JWT token is present\r",
+									"pm.test(\"Login response contains a token\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"\r",
+									"    pm.expect(response).to.have.property(\"token\");\r",
+									"    pm.expect(response.token).to.be.a(\"string\").and.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Test 3: Verify user information is present\r",
+									"pm.test(\"Login response contains user details\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"\r",
+									"    pm.expect(response).to.have.property(\"user\");\r",
+									"    pm.expect(response.user).to.be.an(\"object\");\r",
+									"});\r",
+									"\r",
+									"// Test 4: Verify user details are correct\r",
+									"pm.test(\"Verify teacher account details\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"\r",
+									"    pm.expect(response.user.name).to.eql(\"QA Test Teacher\");\r",
+									"    pm.expect(response.user.email).to.eql(\"qa.teacher001@example.com\");\r",
+									"    pm.expect(response.user.role).to.eql(\"teacher\");\r",
+									"});\r",
+									"\r",
+									"// Test 5: Verify sensitive fields are not exposed\r",
+									"pm.test(\"Password and face embeddings are not exposed\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"\r",
+									"    pm.expect(response.user).to.not.have.property(\"password\");\r",
+									"    pm.expect(response.user).to.not.have.property(\"faceEmbeddings\");\r",
+									"});\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"if (pm.response.code === 200 && response.token) {\r",
+									"    pm.environment.set(\"token\", response.token);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"qa.teacher001@example.com\",\r\n  \"password\": \"TestPass123!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SETUP - Student Login",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH_TC_007 - Login with Incorrect Password",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH_TC_008 - Login with Unregistered Email",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH_TC_009 - Login with Missing Password",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH_TC_010 - Login with Missing Email",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH_TC_011 - Get Current User Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verify successful response\r",
+									"pm.test(\"Get current user returns 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test 2: Verify user details are present\r",
+									"pm.test(\"User profile is returned\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"\r",
+									"    pm.expect(response).to.have.property(\"_id\");\r",
+									"    pm.expect(response).to.have.property(\"email\");\r",
+									"});\r",
+									"\r",
+									"// Test 3: Verify correct teacher account\r",
+									"pm.test(\"Correct teacher profile is returned\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"\r",
+									"    pm.expect(response.name).to.eql(\"QA Test Teacher\");\r",
+									"    pm.expect(response.email).to.eql(\"qa.teacher001@example.com\");\r",
+									"    pm.expect(response.role).to.eql(\"teacher\");\r",
+									"});\r",
+									"\r",
+									"// Test 4: Verify sensitive fields are excluded\r",
+									"pm.test(\"Password and face embeddings are excluded\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"\r",
+									"    pm.expect(response).to.not.have.property(\"password\");\r",
+									"    pm.expect(response).to.not.have.property(\"faceEmbeddings\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTlmOTg3ZGI1MDM0NDUzZmI3Y2FjMyIsImlhdCI6MTc5MzgyMjA4MCwiZXhwIjoxNzk0NDI2ODgwfQ.NV7ZXUhlSK0Mk566oE_cIXQUmy-e4Z2V-ul5Vxh-AwM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH_TC_012 - Get Profile Without Token",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH_TC_013 - Get Profile With Invalid Token",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH_TC_014 - Save Face Embeddings Without Data",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Courses",
+			"item": [
+				{
+					"name": "COURSE_TC_001 - Create Course with Valid Details",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Create Course - Automation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verify successful course creation\r",
+									"pm.test(\"Course creation returns 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// Test 2: Verify course name\r",
+									"pm.test(\"Course name is correct\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.courseName).to.eql(\"Postman Automation Test Course\");\r",
+									"});\r",
+									"\r",
+									"// Test 3: Verify course ID\r",
+									"pm.test(\"Course ID is generated correctly\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"\r",
+									"    pm.expect(response.courseId).to.be.a(\"string\");\r",
+									"    pm.expect(response.courseId).to.match(/^PMAUTO\\d+$/);\r",
+									"});\r",
+									"\r",
+									"// Test 4: Verify course is active\r",
+									"pm.test(\"New course is active\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.isActive).to.eql(true);\r",
+									"});\r",
+									"\r",
+									"// Test 5: Verify owner details\r",
+									"pm.test(\"Course owner is correct\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.owner.email).to.eql(\"qa.teacher001@example.com\");\r",
+									"});\r",
+									"// Save generated Course ID for later requests\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"if (pm.response.code === 201 && response.courseId) {\r",
+									"    pm.environment.set(\"automationCourseId\", response.courseId);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTlmOTg3ZGI1MDM0NDUzZmI3Y2FjMyIsImlhdCI6MTc5MzgyMjA4MCwiZXhwIjoxNzk0NDI2ODgwfQ.NV7ZXUhlSK0Mk566oE_cIXQUmy-e4Z2V-ul5Vxh-AwM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"courseName\": \"Postman Automation Test Course\",\r\n    \"courseId\": \"PMAUTO{{$timestamp}}\",\r\n    \"description\": \"Temporary course for Postman automation practice\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/courses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"courses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Course - Duplicate ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Duplicate course should return 400\r",
+									"pm.test(\"Duplicate course returns 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// Test 2: Correct duplicate error message\r",
+									"pm.test(\"Duplicate course error message is correct\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.message).to.eql(\"Course ID already taken\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTlmOTg3ZGI1MDM0NDUzZmI3Y2FjMyIsImlhdCI6MTc5MzgyMjA4MCwiZXhwIjoxNzk0NDI2ODgwfQ.NV7ZXUhlSK0Mk566oE_cIXQUmy-e4Z2V-ul5Vxh-AwM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"courseName\": \"Duplicate Course Test\",\r\n    \"courseId\": \"QA101\",\r\n    \"description\": \"Testing duplicate course ID rejection\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/courses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"courses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "COURSE_TC_002 - Missing Course Name",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "COURSE_TC_003 - Missing Course ID",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "COURSE_TC_004 - Duplicate Course ID",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "COURSE_TC_005 - Create Course Without Description",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "COURSE_TC_006 - Get all courses belonging to teacher",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verify successful response\r",
+									"pm.test(\"Get My Courses returns 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test 2: Verify response is an array\r",
+									"pm.test(\"Courses are returned as an array\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Test 3: Verify automation course exists\r",
+									"pm.test(\"Automation course is present\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"\r",
+									"    const courseExists = response.some(function (course) {\r",
+									"        return course.courseId === pm.environment.get(\"automationCourseId\");\r",
+									"    });\r",
+									"\r",
+									"    pm.expect(courseExists).to.eql(true);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTlmOTg3ZGI1MDM0NDUzZmI3Y2FjMyIsImlhdCI6MTc5MzgyMjA4MCwiZXhwIjoxNzk0NDI2ODgwfQ.NV7ZXUhlSK0Mk566oE_cIXQUmy-e4Z2V-ul5Vxh-AwM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/courses/my",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"courses",
+								"my"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "COURSE_TC_007 - Get Course by Valid Course ID",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "COURSE_TC_008 - Get Course by Invalid Course ID",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "COURSE_TC_009 - Update Course Details",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "COURSE_TC_010 - Update Course Without Authentication",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "COURSE_TC_011 - Delete Course as Owner",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "COURSE_TC_012 - Delete Course as Non-Owner",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "COURSE_TC_013 - Add Valid Co-Teacher",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "COURSE_TC_014 - Add Co-Teacher with Invalid Email",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "COURSE_TC_015 - Remove Co-Teacher",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "SETUP - Create QA102 for rejection testing",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Enrollment",
+			"item": [
+				{
+					"name": "ENROLL_TC_001 - Student requests enrollment with valid Course ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verify enrollment request is created\r",
+									"pm.test(\"Enrollment request returns 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// Test 2: Verify enrollment status is pending\r",
+									"pm.test(\"Enrollment status is pending\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.status).to.eql(\"pending\");\r",
+									"});\r",
+									"\r",
+									"// Test 3: Verify enrollment is linked to QA101\r",
+									"pm.test(\"Enrollment belongs to QA101\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.courseId).to.eql(\r",
+									"    pm.environment.get(\"automationCourseId\")\r",
+									");\r",
+									"});\r",
+									"// Save generated Enrollment ID for approval\r",
+									"const enrollmentResponse = pm.response.json();\r",
+									"\r",
+									"if (pm.response.code === 201 && enrollmentResponse._id) {\r",
+									"    pm.environment.set(\"automationEnrollmentId\", enrollmentResponse._id);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YTU1MWZjNjViMDFlZGIyZWFlZTU2YSIsImlhdCI6MTc5MzgwODc1NiwiZXhwIjoxNzk0NDEzNTU2fQ.a3AWS8NJmFE87dF7hcelWlEhjKZEjIrQ-mHFLSDxNyQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"courseId\": \"{{automationCourseId}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/enrollments/request",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"enrollments",
+								"request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ENROLL_TC_002 - Request enrollment with invalid Course ID",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "ENROLL_TC_003 - Duplicate enrollment request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "ENROLL_TC_004 - Student views own enrollments",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "ENROLL_TC_005 - Teacher views pending enrollment requests",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "ENROLL_TC_006 - Teacher views approved students",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "ENROLL_TC_007 - Teacher approves pending enrollment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verify enrollment approval succeeds\r",
+									"pm.test(\"Enrollment approval returns 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test 2: Verify enrollment status is approved\r",
+									"pm.test(\"Enrollment status is approved\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.status).to.eql(\"approved\");\r",
+									"});\r",
+									"\r",
+									"// Test 3: Verify the correct enrollment was approved\r",
+									"pm.test(\"Correct automation enrollment was approved\", function () {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.courseId).to.eql(\r",
+									"        pm.environment.get(\"automationCourseId\")\r",
+									"    );\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTlmOTg3ZGI1MDM0NDUzZmI3Y2FjMyIsImlhdCI6MTc5MzgyMjA4MCwiZXhwIjoxNzk0NDI2ODgwfQ.NV7ZXUhlSK0Mk566oE_cIXQUmy-e4Z2V-ul5Vxh-AwM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"action\": \"approve\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/enrollments/{{automationEnrollmentId}}/review",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"enrollments",
+								"{{automationEnrollmentId}}",
+								"review"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SETUP - Student requests QA102 enrollment",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "ENROLL_TC_008 - Teacher rejects pending enrollment",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "ENROLL_TC_009 - Unauthorized teacher reviews enrollment",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "ENROLL_TC_010 - Review enrollment with invalid ID",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "ENROLL_TC_011 - Student accesses teacher-only endpoint",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subject",
+			"item": [
+				{
+					"name": "SUBJECT_TC_001 - Create subject",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "SUBJECT_TC_002 - Unauthorized teacher creates subject",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "SUBJECT_TC_003 - Update existing subject",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "SUBJECT_TC_004 - Regenerate subject invite token",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "SUBJECT_TC_005 - Delete subject and verify deactivation",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Verify Backend Health",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response status is ok\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"\r",
+							"    pm.expect(response.status).to.eql(\"ok\");\r",
+							"});\r",
+							"pm.test(\"Timestamp is present and is a string\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"\r",
+							"    pm.expect(response).to.have.property(\"timestamp\");\r",
+							"    pm.expect(response.timestamp).to.be.a(\"string\");\r",
+							"});\r",
+							"pm.test(\"Response time is below 2000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
