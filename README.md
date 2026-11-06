@@ -98,7 +98,7 @@ Database validation was performed using MongoDB Compass to verify data persisten
 
 Explore the following sections for detailed testing documentation:
 
-- **[Test Plan](test-plan/README.md)** – Testing objectives, scope, approach, and planning.
+- **[Test Plan](test-plan/test-plan.md)** – Testing objectives, scope, approach, and planning.
 - **[API Testing](api-testing/README.md)** – Manual API testing results, Postman automation, and identified issues.
 - **[Database Testing](api-testing/database-testing/README.md)** – MongoDB database validation and test results.
 
